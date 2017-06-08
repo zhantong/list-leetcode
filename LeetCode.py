@@ -100,6 +100,8 @@ class LeetCode:
         elif type == 'excel':
             from openpyxl import Workbook
             from openpyxl.styles import NamedStyle
+            from openpyxl.formatting.rule import CellIsRule, DataBarRule
+            from openpyxl.styles import PatternFill
 
             wb = Workbook()
             ws = wb.active
@@ -132,6 +134,39 @@ class LeetCode:
                 cell.style = style_str
             for cell in ws[column_index['通过率']][1:]:
                 cell.style = style_pcnt
+            red_color = 'ffc7ce'
+            green_color = 'c2efcf'
+            yellow_color = 'ffeba2'
+            red_fill = PatternFill(start_color=red_color, end_color=red_color, fill_type='solid')
+            green_fill = PatternFill(start_color=green_color, end_color=green_color, fill_type='solid')
+            yellow_fill = PatternFill(start_color=yellow_color, end_color=yellow_color, fill_type='solid')
+            ws.conditional_formatting.add(column_index['难度'] + '1:' + column_index['难度'] + '1048576',
+                                          CellIsRule(operator='equal', formula=['"简单"'], stopIfTrue=False,
+                                                     fill=green_fill))
+            ws.conditional_formatting.add(column_index['难度'] + '1:' + column_index['难度'] + '1048576',
+                                          CellIsRule(operator='equal', formula=['"中等"'], stopIfTrue=False,
+                                                     fill=yellow_fill))
+            ws.conditional_formatting.add(column_index['难度'] + '1:' + column_index['难度'] + '1048576',
+                                          CellIsRule(operator='equal', formula=['"难"'], stopIfTrue=False,
+                                                     fill=red_fill))
+
+            ws.conditional_formatting.add(column_index['付费'] + '1:' + column_index['付费'] + '1048576',
+                                          CellIsRule(operator='equal', formula=['"否"'], stopIfTrue=False,
+                                                     fill=green_fill))
+            ws.conditional_formatting.add(column_index['付费'] + '1:' + column_index['付费'] + '1048576',
+                                          CellIsRule(operator='equal', formula=['"是"'], stopIfTrue=False,
+                                                     fill=red_fill))
+
+            ws.conditional_formatting.add(column_index['已解决'] + '1:' + column_index['已解决'] + '1048576',
+                                          CellIsRule(operator='equal', formula=['"否"'], stopIfTrue=False,
+                                                     fill=red_fill))
+            ws.conditional_formatting.add(column_index['已解决'] + '1:' + column_index['已解决'] + '1048576',
+                                          CellIsRule(operator='equal', formula=['"是"'], stopIfTrue=False,
+                                                     fill=green_fill))
+
+            ws.conditional_formatting.add(column_index['通过率'] + '1:' + column_index['通过率'] + '1048576',
+                                          DataBarRule(start_type='percentile', start_value=0, end_type='percentile',
+                                                      end_value=100, color="FF638EC6", showValue='None'))
             wb.save('data.xlsx')
 
     def load_data(self, file_path):
