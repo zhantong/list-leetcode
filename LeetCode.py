@@ -99,6 +99,7 @@ class LeetCode:
                 writer.writerows(self.problem_list)
         elif type == 'excel':
             from openpyxl import Workbook
+            from openpyxl.styles import NamedStyle
 
             wb = Workbook()
             ws = wb.active
@@ -107,6 +108,30 @@ class LeetCode:
             rows = [{column_index[key]: value for (key, value) in problem.items()} for problem in self.problem_list]
             for row in rows:
                 ws.append(row)
+            style_int = NamedStyle('int')
+            style_int.number_format = '0'
+            style_str = NamedStyle('str')
+            style_str.number_format = '@'
+            style_pcnt = NamedStyle('pcnt')
+            style_pcnt.number_format = '0.0%'
+            for cell in ws[column_index['题号']][1:]:
+                cell.style = style_int
+            for cell in ws[column_index['总提交数']][1:]:
+                cell.style = style_int
+            for cell in ws[column_index['总通过数']][1:]:
+                cell.style = style_int
+            for cell in ws[column_index['标题']][1:]:
+                cell.style = style_str
+            for cell in ws[column_index['链接']][1:]:
+                cell.style = style_str
+            for cell in ws[column_index['难度']][1:]:
+                cell.style = style_str
+            for cell in ws[column_index['付费']][1:]:
+                cell.style = style_str
+            for cell in ws[column_index['已解决']][1:]:
+                cell.style = style_str
+            for cell in ws[column_index['通过率']][1:]:
+                cell.style = style_pcnt
             wb.save('data.xlsx')
 
     def load_data(self, file_path):
