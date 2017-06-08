@@ -97,9 +97,26 @@ class LeetCode:
                 writer = csv.DictWriter(f, fieldnames=self.problem_list[0].keys())
                 writer.writeheader()
                 writer.writerows(self.problem_list)
+        elif type == 'excel':
+            from openpyxl import Workbook
+
+            wb = Workbook()
+            ws = wb.active
+            ws.append(tuple(self.problem_list[0].keys()))
+            column_index = {item.value: item.column for item in ws[1]}
+            rows = [{column_index[key]: value for (key, value) in problem.items()} for problem in self.problem_list]
+            for row in rows:
+                ws.append(row)
+            wb.save('data.xlsx')
+
+    def load_data(self, file_path):
+        with open(file_path, encoding='utf-8') as f:
+            self.problem_list = json.loads(f.read())
 
 
 if __name__ == '__main__':
     leetCode = LeetCode()
-    leetCode.login_from_config()
-    leetCode.save_problem_list()
+    # leetCode.login_from_config()
+    leetCode.load_data('data.json')
+    leetCode.problem_list = leetCode.to_Chinese(leetCode.problem_list)
+    leetCode.save_problem_list('excel')
