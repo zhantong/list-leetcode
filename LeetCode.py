@@ -61,6 +61,34 @@ class LeetCode:
         result.sort(key=lambda x: x['id'])
         return result
 
+    def to_Chinese(self, problems):
+        title_chinese = {
+            'id': '题号',
+            'title': '标题',
+            'slug': '链接',
+            'difficulty': '难度',
+            'total_submitted': '总提交数',
+            'total_acs': '总通过数',
+            'acceptance': '通过率',
+            'paid_only': '付费',
+            'status': '已解决'
+        }
+        problems = [{title_chinese[key]: value for (key, value) in problem.items()} for problem in problems]
+        difficulty_chinese = {
+            1: '简单',
+            2: '中等',
+            3: '难'
+        }
+        bool_chinese = {
+            True: '是',
+            False: '否'
+        }
+        for problem in problems:
+            problem['难度'] = difficulty_chinese[problem['难度']]
+            problem['付费'] = bool_chinese[problem['付费']]
+            problem['已解决'] = bool_chinese[problem['已解决']]
+        return problems
+
     def save_problem_list(self, type='csv'):
         if not self.problem_list:
             self.problem_list = self.get_problem_list()
