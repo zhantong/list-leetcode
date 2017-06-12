@@ -61,7 +61,7 @@ class LeetCode:
         return result
 
     def to_Chinese(self, problems):
-        title_chinese = {
+        language_dict = {
             'id': '题号',
             'title': '标题',
             'slug': '链接',
@@ -70,101 +70,107 @@ class LeetCode:
             'total_acs': '总通过数',
             'acceptance': '通过率',
             'paid_only': '付费',
-            'status': '已解决'
-        }
-        problems = [{title_chinese[key]: value for (key, value) in problem.items()} for problem in problems]
-        difficulty_chinese = {
+            'status': '已解决',
             1: '简单',
             2: '中等',
-            3: '难'
-        }
-        bool_chinese = {
+            3: '难',
             True: '是',
             False: '否'
         }
+
+        problems = [{language_dict[key]: value for (key, value) in problem.items()} for problem in problems]
+
         for problem in problems:
-            problem['难度'] = difficulty_chinese[problem['难度']]
-            problem['付费'] = bool_chinese[problem['付费']]
-            problem['已解决'] = bool_chinese[problem['已解决']]
-        return problems
+            problem['难度'] = language_dict[problem['难度']]
+            problem['付费'] = language_dict[problem['付费']]
+            problem['已解决'] = language_dict[problem['已解决']]
+        return problems, language_dict
 
-    def save_problem_list(self, problem_list, type='csv'):
-        if type == 'csv':
-            with open('leetcode.csv', 'w', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=problem_list[0].keys())
-                writer.writeheader()
-                writer.writerows(problem_list)
-        elif type == 'excel':
-            from openpyxl import Workbook
-            from openpyxl.styles import NamedStyle
-            from openpyxl.formatting.rule import CellIsRule, DataBarRule
-            from openpyxl.styles import PatternFill
+    def save_problem_list_as_csv(self, problem_list, file_name):
+        with open(file_name, 'w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=problem_list[0].keys())
+            writer.writeheader()
+            writer.writerows(problem_list)
 
-            wb = Workbook()
-            ws = wb.active
-            ws.append(tuple(problem_list[0].keys()))
-            column_index = {item.value: item.column for item in ws[1]}
-            rows = [{column_index[key]: value for (key, value) in problem.items()} for problem in problem_list]
-            for row in rows:
-                ws.append(row)
+    def save_problem_list_as_excel(self, problem_list, file_name, language_dict):
+        from openpyxl import Workbook
+        from openpyxl.styles import NamedStyle
+        from openpyxl.formatting.rule import CellIsRule, DataBarRule
+        from openpyxl.styles import PatternFill
+
+        def format_cell_style(ws, language_dict):
             style_int = NamedStyle('int')
             style_int.number_format = '0'
             style_str = NamedStyle('str')
             style_str.number_format = '@'
             style_pcnt = NamedStyle('pcnt')
             style_pcnt.number_format = '0.0%'
-            for cell in ws[column_index['题号']][1:]:
+            for cell in ws[column_index[language_dict['id']]][1:]:
                 cell.style = style_int
-            for cell in ws[column_index['总提交数']][1:]:
+            for cell in ws[column_index[language_dict['total_submitted']]][1:]:
                 cell.style = style_int
-            for cell in ws[column_index['总通过数']][1:]:
+            for cell in ws[column_index[language_dict['total_acs']]][1:]:
                 cell.style = style_int
-            for cell in ws[column_index['标题']][1:]:
+            for cell in ws[column_index[language_dict['title']]][1:]:
                 cell.style = style_str
-            for cell in ws[column_index['链接']][1:]:
+            for cell in ws[column_index[language_dict['slug']]][1:]:
                 cell.style = style_str
-            for cell in ws[column_index['难度']][1:]:
+            for cell in ws[column_index[language_dict['difficulty']]][1:]:
                 cell.style = style_str
-            for cell in ws[column_index['付费']][1:]:
+            for cell in ws[column_index[language_dict['paid_only']]][1:]:
                 cell.style = style_str
-            for cell in ws[column_index['已解决']][1:]:
+            for cell in ws[column_index[language_dict['status']]][1:]:
                 cell.style = style_str
-            for cell in ws[column_index['通过率']][1:]:
+            for cell in ws[column_index[language_dict['acceptance']]][1:]:
                 cell.style = style_pcnt
+
+        def conditional_formatting(ws, language_dict):
             red_color = 'ffc7ce'
             green_color = 'c2efcf'
             yellow_color = 'ffeba2'
+
             red_fill = PatternFill(start_color=red_color, end_color=red_color, fill_type='solid')
             green_fill = PatternFill(start_color=green_color, end_color=green_color, fill_type='solid')
             yellow_fill = PatternFill(start_color=yellow_color, end_color=yellow_color, fill_type='solid')
-            ws.conditional_formatting.add(self.get_entire_column(column_index['难度']),
-                                          CellIsRule(operator='equal', formula=['"简单"'], stopIfTrue=False,
-                                                     fill=green_fill))
-            ws.conditional_formatting.add(self.get_entire_column(column_index['难度']),
-                                          CellIsRule(operator='equal', formula=['"中等"'], stopIfTrue=False,
-                                                     fill=yellow_fill))
-            ws.conditional_formatting.add(self.get_entire_column(column_index['难度']),
-                                          CellIsRule(operator='equal', formula=['"难"'], stopIfTrue=False,
-                                                     fill=red_fill))
 
-            ws.conditional_formatting.add(self.get_entire_column(column_index['付费']),
-                                          CellIsRule(operator='equal', formula=['"否"'], stopIfTrue=False,
-                                                     fill=green_fill))
-            ws.conditional_formatting.add(self.get_entire_column(column_index['付费']),
-                                          CellIsRule(operator='equal', formula=['"是"'], stopIfTrue=False,
-                                                     fill=red_fill))
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['difficulty']]),
+                                          CellIsRule(operator='equal', formula=['"' + language_dict[1] + '"'],
+                                                     stopIfTrue=False, fill=green_fill))
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['difficulty']]),
+                                          CellIsRule(operator='equal', formula=['"' + language_dict[2] + '"'],
+                                                     stopIfTrue=False, fill=yellow_fill))
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['difficulty']]),
+                                          CellIsRule(operator='equal', formula=['"' + language_dict[3] + '"'],
+                                                     stopIfTrue=False, fill=red_fill))
 
-            ws.conditional_formatting.add(self.get_entire_column(column_index['已解决']),
-                                          CellIsRule(operator='equal', formula=['"否"'], stopIfTrue=False,
-                                                     fill=red_fill))
-            ws.conditional_formatting.add(self.get_entire_column(column_index['已解决']),
-                                          CellIsRule(operator='equal', formula=['"是"'], stopIfTrue=False,
-                                                     fill=green_fill))
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['paid_only']]),
+                                          CellIsRule(operator='equal', formula=['"' + language_dict[False] + '"'],
+                                                     stopIfTrue=False, fill=green_fill))
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['paid_only']]),
+                                          CellIsRule(operator='equal', formula=['"' + language_dict[True] + '"'],
+                                                     stopIfTrue=False, fill=red_fill))
 
-            ws.conditional_formatting.add(self.get_entire_column(column_index['通过率']),
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['status']]),
+                                          CellIsRule(operator='equal', formula=['"' + language_dict[False] + '"'],
+                                                     stopIfTrue=False, fill=red_fill))
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['status']]),
+                                          CellIsRule(operator='equal', formula=['"' + language_dict[True] + '"'],
+                                                     stopIfTrue=False, fill=green_fill))
+
+            ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['acceptance']]),
                                           DataBarRule(start_type='percentile', start_value=0, end_type='percentile',
                                                       end_value=100, color="FF638EC6", showValue='None'))
-            wb.save('data.xlsx')
+
+        wb = Workbook()
+        ws = wb.active
+        ws.append(tuple(problem_list[0].keys()))
+        column_index = {item.value: item.column for item in ws[1]}
+        rows = [{column_index[key]: value for (key, value) in problem.items()} for problem in problem_list]
+        for row in rows:
+            ws.append(row)
+        format_cell_style(ws, language_dict)
+        conditional_formatting(ws, language_dict)
+        wb.save(file_name)
 
     def get_entire_column(self, index):
         return index + '1:' + index + '1048576'
@@ -178,5 +184,5 @@ if __name__ == '__main__':
     leetCode = LeetCode()
     # leetCode.login_from_config()
     problem_list = leetCode.load_data('data.json')
-    problem_list = leetCode.to_Chinese(problem_list)
-    leetCode.save_problem_list(problem_list, 'excel')
+    problem_list, language_dict = leetCode.to_Chinese(problem_list)
+    leetCode.save_problem_list_as_excel(problem_list, 'out.xlsx', language_dict)
