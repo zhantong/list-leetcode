@@ -60,31 +60,14 @@ class LeetCode:
         result.sort(key=lambda x: x['id'])
         return result
 
-    def to_Chinese(self, problems):
-        language_dict = {
-            'id': '题号',
-            'title': '标题',
-            'slug': '链接',
-            'difficulty': '难度',
-            'total_submitted': '总提交数',
-            'total_acs': '总通过数',
-            'acceptance': '通过率',
-            'paid_only': '付费',
-            'status': '已解决',
-            1: '简单',
-            2: '中等',
-            3: '难',
-            True: '是',
-            False: '否'
-        }
+    def to_locale(self, problem_list, language_dict):
+        problem_list = [{language_dict[key]: value for (key, value) in problem.items()} for problem in problem_list]
 
-        problems = [{language_dict[key]: value for (key, value) in problem.items()} for problem in problems]
-
-        for problem in problems:
-            problem['难度'] = language_dict[problem['难度']]
-            problem['付费'] = language_dict[problem['付费']]
-            problem['已解决'] = language_dict[problem['已解决']]
-        return problems, language_dict
+        for problem in problem_list:
+            problem[language_dict['difficulty']] = language_dict[problem[language_dict['difficulty']]]
+            problem[language_dict['paid_only']] = language_dict[problem[language_dict['paid_only']]]
+            problem[language_dict['status']] = language_dict[problem[language_dict['status']]]
+        return problem_list
 
     def save_problem_list_as_csv(self, problem_list, file_name):
         with open(file_name, 'w', newline='') as f:
@@ -181,8 +164,40 @@ class LeetCode:
 
 
 if __name__ == '__main__':
+    language_dict_Chinese = {
+        'id': '题号',
+        'title': '标题',
+        'slug': '链接',
+        'difficulty': '难度',
+        'total_submitted': '总提交数',
+        'total_acs': '总通过数',
+        'acceptance': '通过率',
+        'paid_only': '付费',
+        'status': '已解决',
+        1: '简单',
+        2: '中等',
+        3: '难',
+        True: '是',
+        False: '否'
+    }
+    language_dict_English = {
+        'id': '#',
+        'title': 'Title',
+        'slug': 'Link',
+        'difficulty': 'Difficulty',
+        'total_submitted': 'Total Submitted',
+        'total_acs': 'Total Accepted',
+        'acceptance': 'Acceptance',
+        'paid_only': 'Paid Only',
+        'status': 'Solved',
+        1: 'Easy',
+        2: 'Medium',
+        3: 'Hard',
+        True: 'Yes',
+        False: 'No'
+    }
     leetCode = LeetCode()
     # leetCode.login_from_config()
     problem_list = leetCode.load_data('data.json')
-    problem_list, language_dict = leetCode.to_Chinese(problem_list)
-    leetCode.save_problem_list_as_excel(problem_list, 'out.xlsx', language_dict)
+    problem_list = leetCode.to_locale(problem_list, language_dict_Chinese)
+    leetCode.save_problem_list_as_excel(problem_list, 'out.xlsx', language_dict_Chinese)
