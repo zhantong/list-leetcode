@@ -18,7 +18,6 @@ class LeetCode:
              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'),
             ('Referer', 'https://leetcode.com/accounts/login/')
         ]
-        self.problem_list = None
 
     def login_from_config(self):
         config = configparser.ConfigParser()
@@ -89,14 +88,12 @@ class LeetCode:
             problem['已解决'] = bool_chinese[problem['已解决']]
         return problems
 
-    def save_problem_list(self, type='csv'):
-        if not self.problem_list:
-            self.problem_list = self.get_problem_list()
+    def save_problem_list(self, problem_list, type='csv'):
         if type == 'csv':
             with open('leetcode.csv', 'w', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=self.problem_list[0].keys())
+                writer = csv.DictWriter(f, fieldnames=problem_list[0].keys())
                 writer.writeheader()
-                writer.writerows(self.problem_list)
+                writer.writerows(problem_list)
         elif type == 'excel':
             from openpyxl import Workbook
             from openpyxl.styles import NamedStyle
@@ -105,9 +102,9 @@ class LeetCode:
 
             wb = Workbook()
             ws = wb.active
-            ws.append(tuple(self.problem_list[0].keys()))
+            ws.append(tuple(problem_list[0].keys()))
             column_index = {item.value: item.column for item in ws[1]}
-            rows = [{column_index[key]: value for (key, value) in problem.items()} for problem in self.problem_list]
+            rows = [{column_index[key]: value for (key, value) in problem.items()} for problem in problem_list]
             for row in rows:
                 ws.append(row)
             style_int = NamedStyle('int')
@@ -140,43 +137,46 @@ class LeetCode:
             red_fill = PatternFill(start_color=red_color, end_color=red_color, fill_type='solid')
             green_fill = PatternFill(start_color=green_color, end_color=green_color, fill_type='solid')
             yellow_fill = PatternFill(start_color=yellow_color, end_color=yellow_color, fill_type='solid')
-            ws.conditional_formatting.add(column_index['难度'] + '1:' + column_index['难度'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['难度']),
                                           CellIsRule(operator='equal', formula=['"简单"'], stopIfTrue=False,
                                                      fill=green_fill))
-            ws.conditional_formatting.add(column_index['难度'] + '1:' + column_index['难度'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['难度']),
                                           CellIsRule(operator='equal', formula=['"中等"'], stopIfTrue=False,
                                                      fill=yellow_fill))
-            ws.conditional_formatting.add(column_index['难度'] + '1:' + column_index['难度'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['难度']),
                                           CellIsRule(operator='equal', formula=['"难"'], stopIfTrue=False,
                                                      fill=red_fill))
 
-            ws.conditional_formatting.add(column_index['付费'] + '1:' + column_index['付费'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['付费']),
                                           CellIsRule(operator='equal', formula=['"否"'], stopIfTrue=False,
                                                      fill=green_fill))
-            ws.conditional_formatting.add(column_index['付费'] + '1:' + column_index['付费'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['付费']),
                                           CellIsRule(operator='equal', formula=['"是"'], stopIfTrue=False,
                                                      fill=red_fill))
 
-            ws.conditional_formatting.add(column_index['已解决'] + '1:' + column_index['已解决'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['已解决']),
                                           CellIsRule(operator='equal', formula=['"否"'], stopIfTrue=False,
                                                      fill=red_fill))
-            ws.conditional_formatting.add(column_index['已解决'] + '1:' + column_index['已解决'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['已解决']),
                                           CellIsRule(operator='equal', formula=['"是"'], stopIfTrue=False,
                                                      fill=green_fill))
 
-            ws.conditional_formatting.add(column_index['通过率'] + '1:' + column_index['通过率'] + '1048576',
+            ws.conditional_formatting.add(self.get_entire_column(column_index['通过率']),
                                           DataBarRule(start_type='percentile', start_value=0, end_type='percentile',
                                                       end_value=100, color="FF638EC6", showValue='None'))
             wb.save('data.xlsx')
 
+    def get_entire_column(self, index):
+        return index + '1:' + index + '1048576'
+
     def load_data(self, file_path):
         with open(file_path, encoding='utf-8') as f:
-            self.problem_list = json.loads(f.read())
+            return json.loads(f.read())
 
 
 if __name__ == '__main__':
     leetCode = LeetCode()
     # leetCode.login_from_config()
-    leetCode.load_data('data.json')
-    leetCode.problem_list = leetCode.to_Chinese(leetCode.problem_list)
-    leetCode.save_problem_list('excel')
+    problem_list = leetCode.load_data('data.json')
+    problem_list = leetCode.to_Chinese(problem_list)
+    leetCode.save_problem_list(problem_list, 'excel')
