@@ -166,50 +166,48 @@ class LeetCode:
         with open(file_path, encoding='utf-8') as f:
             return json.loads(f.read())
 
-
-if __name__ == '__main__':
-    language_dict_Chinese = {
-        'id': '题号',
-        'title': '标题',
-        'slug': '链接',
-        'difficulty': '难度',
-        'total_submitted': '总提交数',
-        'total_acs': '总通过数',
-        'acceptance': '通过率',
-        'paid_only': '付费',
-        'status': '已解决',
-        'level': {
-            1: '简单',
-            2: '中等',
-            3: '难'
-        },
-        'bool': {
-            True: '是',
-            False: '否'
-        }
-    }
-    language_dict_English = {
-        'id': '#',
-        'title': 'Title',
-        'slug': 'Link',
-        'difficulty': 'Difficulty',
-        'total_submitted': 'Total Submitted',
-        'total_acs': 'Total Accepted',
-        'acceptance': 'Acceptance',
-        'paid_only': 'Paid Only',
-        'status': 'Solved',
-        'level': {
-            1: 'Easy',
-            2: 'Medium',
-            3: 'Hard'
-        },
-        'bool': {
-            True: 'Yes',
-            False: 'No'
-        }
-    }
-    leetCode = LeetCode()
-    # leetCode.login_from_config()
-    problem_list = leetCode.load_data('data.json')
-    problem_list = leetCode.to_locale(problem_list, language_dict_Chinese)
-    leetCode.save_problem_list_as_excel(problem_list, 'out.xlsx', language_dict_Chinese)
+    def get_language_dict(self, language):
+        language_dict = None
+        if language == 'Chinese':
+            language_dict = {
+                'id': '题号',
+                'title': '标题',
+                'slug': '链接',
+                'difficulty': '难度',
+                'total_submitted': '总提交数',
+                'total_acs': '总通过数',
+                'acceptance': '通过率',
+                'paid_only': '付费',
+                'status': '已解决',
+                'level': {
+                    1: '简单',
+                    2: '中等',
+                    3: '难'
+                },
+                'bool': {
+                    True: '是',
+                    False: '否'
+                }
+            }
+        elif language == 'English':
+            language_dict = {
+                'id': '#',
+                'title': 'Title',
+                'slug': 'Link',
+                'difficulty': 'Difficulty',
+                'total_submitted': 'Total Submitted',
+                'total_acs': 'Total Accepted',
+                'acceptance': 'Acceptance',
+                'paid_only': 'Paid Only',
+                'status': 'Solved',
+                'level': {
+                    1: 'Easy',
+                    2: 'Medium',
+                    3: 'Hard'
+                },
+                'bool': {
+                    True: 'Yes',
+                    False: 'No'
+                }
+            }
+        return language_dict
