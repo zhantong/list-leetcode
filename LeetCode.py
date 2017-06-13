@@ -3,7 +3,6 @@ import urllib.parse
 import http.cookiejar
 import re
 import json
-import configparser
 import csv
 
 
@@ -20,9 +19,9 @@ class LeetCode:
         ]
 
     def login_from_config(self):
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-        return self.login(config['DEFAULT']['UserName'], config['DEFAULT']['Password'])
+        with open('config.json', encoding='utf-8') as f:
+            config = json.loads(f.read())
+        return self.login(config['UserName'], config['Password'])
 
     def login(self, user_name, password):
         with self.opener.open(self.base_url + 'accounts/login/') as f:

@@ -4,7 +4,7 @@ leetCode = LeetCode()
 
 # 账号密码登录
 leetCode.login('user_name', 'password')
-# 或者你也可以选择在config.ini中保存账号密码，用下面这个方法来登录
+# 或者你也可以选择在config.json中保存账号密码，用下面这个方法来登录
 # leetCode.login_from_config()
 
 # 获取全部题目详细数据
