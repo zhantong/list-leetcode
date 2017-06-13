@@ -64,9 +64,9 @@ class LeetCode:
         problem_list = [{language_dict[key]: value for (key, value) in problem.items()} for problem in problem_list]
 
         for problem in problem_list:
-            problem[language_dict['difficulty']] = language_dict[problem[language_dict['difficulty']]]
-            problem[language_dict['paid_only']] = language_dict[problem[language_dict['paid_only']]]
-            problem[language_dict['status']] = language_dict[problem[language_dict['status']]]
+            problem[language_dict['difficulty']] = language_dict['level'][problem[language_dict['difficulty']]]
+            problem[language_dict['paid_only']] = language_dict['bool'][problem[language_dict['paid_only']]]
+            problem[language_dict['status']] = language_dict['bool'][problem[language_dict['status']]]
         return problem_list
 
     def save_problem_list_as_csv(self, problem_list, file_name):
@@ -117,27 +117,31 @@ class LeetCode:
             yellow_fill = PatternFill(start_color=yellow_color, end_color=yellow_color, fill_type='solid')
 
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['difficulty']]),
-                                          CellIsRule(operator='equal', formula=['"' + language_dict[1] + '"'],
+                                          CellIsRule(operator='equal', formula=['"' + language_dict['level'][1] + '"'],
                                                      stopIfTrue=False, fill=green_fill))
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['difficulty']]),
-                                          CellIsRule(operator='equal', formula=['"' + language_dict[2] + '"'],
+                                          CellIsRule(operator='equal', formula=['"' + language_dict['level'][2] + '"'],
                                                      stopIfTrue=False, fill=yellow_fill))
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['difficulty']]),
-                                          CellIsRule(operator='equal', formula=['"' + language_dict[3] + '"'],
+                                          CellIsRule(operator='equal', formula=['"' + language_dict['level'][3] + '"'],
                                                      stopIfTrue=False, fill=red_fill))
 
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['paid_only']]),
-                                          CellIsRule(operator='equal', formula=['"' + language_dict[False] + '"'],
+                                          CellIsRule(operator='equal',
+                                                     formula=['"' + language_dict['bool'][False] + '"'],
                                                      stopIfTrue=False, fill=green_fill))
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['paid_only']]),
-                                          CellIsRule(operator='equal', formula=['"' + language_dict[True] + '"'],
+                                          CellIsRule(operator='equal',
+                                                     formula=['"' + language_dict['bool'][True] + '"'],
                                                      stopIfTrue=False, fill=red_fill))
 
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['status']]),
-                                          CellIsRule(operator='equal', formula=['"' + language_dict[False] + '"'],
+                                          CellIsRule(operator='equal',
+                                                     formula=['"' + language_dict['bool'][False] + '"'],
                                                      stopIfTrue=False, fill=red_fill))
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['status']]),
-                                          CellIsRule(operator='equal', formula=['"' + language_dict[True] + '"'],
+                                          CellIsRule(operator='equal',
+                                                     formula=['"' + language_dict['bool'][True] + '"'],
                                                      stopIfTrue=False, fill=green_fill))
 
             ws.conditional_formatting.add(self.get_entire_column(column_index[language_dict['acceptance']]),
@@ -174,11 +178,15 @@ if __name__ == '__main__':
         'acceptance': '通过率',
         'paid_only': '付费',
         'status': '已解决',
-        1: '简单',
-        2: '中等',
-        3: '难',
-        True: '是',
-        False: '否'
+        'level': {
+            1: '简单',
+            2: '中等',
+            3: '难'
+        },
+        'bool': {
+            True: '是',
+            False: '否'
+        }
     }
     language_dict_English = {
         'id': '#',
@@ -190,11 +198,15 @@ if __name__ == '__main__':
         'acceptance': 'Acceptance',
         'paid_only': 'Paid Only',
         'status': 'Solved',
-        1: 'Easy',
-        2: 'Medium',
-        3: 'Hard',
-        True: 'Yes',
-        False: 'No'
+        'level': {
+            1: 'Easy',
+            2: 'Medium',
+            3: 'Hard'
+        },
+        'bool': {
+            True: 'Yes',
+            False: 'No'
+        }
     }
     leetCode = LeetCode()
     # leetCode.login_from_config()
