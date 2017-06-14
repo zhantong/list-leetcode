@@ -69,7 +69,7 @@ class LeetCode:
         return problem_list
 
     def save_problem_list_as_csv(self, problem_list, file_name):
-        with open(file_name, 'w', newline='') as f:
+        with open(file_name, 'w', encoding='utf-8', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=problem_list[0].keys())
             writer.writeheader()
             writer.writerows(problem_list)
