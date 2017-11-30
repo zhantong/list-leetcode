@@ -1,5 +1,11 @@
 # list-leetcode
+
+## DEPRECATED（不再维护）
+
+相关功能已并入[leetcode-spider](https://github.com/zhantong/leetcode-spider)，此仓库不再维护。
+
 ## 简介
+
 输入你的leetcode账号密码，就能立即生成包含题号、标题、链接、难度、总提交数、总通过数、通过率、是否付费和已解决等内容的，所有leetcode题目的CSV文件，或炫酷的Excel文件。
 
 请看下面的截图吧～
@@ -8,10 +14,8 @@
 
 ![Excel][excel]
 
-[csv]:screenshot/csv.png
-[excel]:screenshot/excel.png
-
 ## 使用方法
+
 参考example.py，请使用Python 3。
 
 ```python
@@ -40,3 +44,7 @@ leetCode.save_problem_list_as_excel(problem_list, 'out.xlsx', language_dict)
 # 或者也可以保存为CSV格式
 # leetCode.save_problem_list_as_csv(problem_list, 'out.csv')
 ```
+
+[csv]: screenshot/csv.png
+
+[excel]: screenshot/excel.png
